@@ -29,6 +29,11 @@
                 <form id="form-publicacion">
                     <input type="text" id="autor-publicacion" placeholder="Tu nombre" required>
                     <textarea id="contenido-publicacion" rows="3" placeholder="¿Qué quieres compartir?" required></textarea>
+                    <!-- Dentro del formulario, agregar: -->
+                    <div class="campo-imagen">
+                        <label for="imagen-publicacion">📸 Subir una imagen (opcional):</label>
+                        <input type="file" id="imagen-publicacion" accept="image/*">
+                    </div>
                     <button type="submit">🌱 Publicar</button>
                 </form>
             </div>

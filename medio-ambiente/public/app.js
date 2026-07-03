@@ -64,29 +64,36 @@ function renderizarProblemas() {
 }
 
 // ============================================
-// FUNCIONES DEL FORO (V1 - SOLO COMENTARIOS)
+// VERSIÓN 2: COMENTARIOS + IMÁGENES
+// ============================================
+
+// ... (el resto del código de V1 se mantiene igual)
+
+// ============================================
+// FUNCIONES DEL FORO (V2 - CON IMÁGENES)
 // ============================================
 
 function cargarPublicaciones() {
-    const guardado = localStorage.getItem('foroV1');
+    const guardado = localStorage.getItem('foroV2'); // Cambiar clave
     if (guardado) {
         publicaciones = JSON.parse(guardado);
         if (publicaciones.length > 0) {
             contadorId = Math.max(...publicaciones.map(p => p.id)) + 1;
         }
     } else {
-        // Datos de ejemplo
         publicaciones = [
             {
                 id: contadorId++,
                 autor: 'Luzma 🌿',
                 contenido: '¡Hoy limpié la playa con mi comunidad! Recogimos 50 kg de plástico.',
+                imagen: null, // Nueva propiedad
                 fecha: new Date(Date.now() - 3600000 * 2).toISOString()
             },
             {
                 id: contadorId++,
                 autor: 'Lorena 💚',
-                contenido: 'Estoy creando un huerto urbano en mi casa. ¡Las plantas ayudan al planeta!',
+                contenido: 'Mi huerto urbano está creciendo. ¡Miren las fotos!',
+                imagen: null,
                 fecha: new Date(Date.now() - 3600000 * 5).toISOString()
             }
         ];
@@ -97,7 +104,7 @@ function cargarPublicaciones() {
 }
 
 function guardarPublicaciones() {
-    localStorage.setItem('foroV1', JSON.stringify(publicaciones));
+    localStorage.setItem('foroV2', JSON.stringify(publicaciones)); // Cambiar clave
     actualizarEstadisticas();
 }
 
@@ -117,6 +124,12 @@ function renderizarPublicaciones() {
         const fechaStr = fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
         const horaStr = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
+        // === NUEVO: Generar HTML de imagen si existe ===
+        let imagenHTML = '';
+        if (pub.imagen) {
+            imagenHTML = `<img src="${pub.imagen}" alt="Imagen de la publicación" class="publicacion-imagen">`;
+        }
+
         const div = document.createElement('div');
         div.className = 'publicacion';
         div.innerHTML = `
@@ -125,6 +138,7 @@ function renderizarPublicaciones() {
                 <span class="publicacion-fecha">📅 ${fechaStr} - ${horaStr}</span>
             </div>
             <div class="publicacion-contenido">${pub.contenido}</div>
+            ${imagenHTML} <!-- === NUEVO: Mostrar imagen === -->
             <div class="publicacion-acciones">
                 <button class="btn-eliminar" data-id="${pub.id}">🗑️ Eliminar</button>
             </div>
@@ -132,6 +146,7 @@ function renderizarPublicaciones() {
         container.appendChild(div);
     });
 
+    // ... eventos de eliminar (igual que V1)
     document.querySelectorAll('.btn-eliminar').forEach(boton => {
         boton.addEventListener('click', function() {
             const id = parseInt(this.dataset.id);
@@ -145,11 +160,15 @@ function renderizarPublicaciones() {
     });
 }
 
-function crearPublicacion(autor, contenido) {
+// ============================================
+// CREAR PUBLICACIÓN CON IMAGEN (NUEVO)
+// ============================================
+function crearPublicacion(autor, contenido, imagenBase64 = null) {
     const nueva = {
         id: contadorId++,
         autor: autor.trim() || 'Anónimo 🌱',
         contenido: contenido.trim(),
+        imagen: imagenBase64, // === NUEVO ===
         fecha: new Date().toISOString()
     };
     publicaciones.push(nueva);
@@ -158,31 +177,40 @@ function crearPublicacion(autor, contenido) {
     actualizarEstadisticas();
 }
 
-function actualizarEstadisticas() {
-    document.getElementById('total-comentarios').textContent = `💬 ${publicaciones.length}`;
-}
-
 // ============================================
-// CONFIGURAR FORMULARIO
+// CONFIGURAR FORMULARIO (CON IMAGEN)
 // ============================================
 function configurarFormulario() {
     const form = document.getElementById('form-publicacion');
+    const inputImagen = document.getElementById('imagen-publicacion'); // NUEVO
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
         const autor = document.getElementById('autor-publicacion').value;
         const contenido = document.getElementById('contenido-publicacion').value;
+        const archivo = inputImagen.files[0]; // NUEVO
 
         if (!autor.trim() || !contenido.trim()) {
             alert('Completa tu nombre y el contenido.');
             return;
         }
 
-        crearPublicacion(autor, contenido);
-        form.reset();
+        // === NUEVO: Manejar la imagen ===
+        if (archivo) {
+            const lector = new FileReader();
+            lector.onload = function(e) {
+                const imagenBase64 = e.target.result;
+                crearPublicacion(autor, contenido, imagenBase64);
+                form.reset();
+                inputImagen.value = '';
+            };
+            lector.readAsDataURL(archivo);
+        } else {
+            crearPublicacion(autor, contenido, null);
+            form.reset();
+        }
     });
 }
-
 // ============================================
 // INICIALIZACIÓN
 // ============================================
