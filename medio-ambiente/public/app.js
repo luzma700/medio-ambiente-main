@@ -1,55 +1,194 @@
-// Datos de los problemas ambientales
+// ============================================
+// VERSIÓN 1: SOLO COMENTARIOS
+// ============================================
+
+// Datos de problemas ambientales
 const problemas = [
     {
-        titulo: "Contaminación por petróleo en el mar",
-        descripcion: "Los derrames de petróleo causan un daño devastador a los ecosistemas marinos, afectando a aves, peces y mamíferos. La limpieza es compleja y costosa, y los efectos pueden durar décadas.",
-        imagen: "https://images.unsplash.com/photo-1612881574301-23a8e5b9e8e9?w=400&auto=format", // Imagen ilustrativa (reemplazar si se desea)
-        impacto: "Alto"
+        id: 1,
+        titulo: "Contaminación por Petróleo",
+        descripcion: "Los derrames de petróleo en el mar destruyen ecosistemas y afectan la vida marina.",
+        icono: "🛢️",
+        estado: "crítico"
     },
     {
-        titulo: "Contaminación por basura en el mar",
-        descripcion: "Millones de toneladas de plástico y otros residuos llegan a los océanos cada año, formando islas de basura y siendo ingeridos por la vida marina, entrando así en la cadena alimenticia.",
-        imagen: "https://images.unsplash.com/photo-1582602697314-bda5c3067f7f?w=400&auto=format", // Imagen ilustrativa (reemplazar si se desea)
-        impacto: "Crítico"
+        id: 2,
+        titulo: "Contaminación por Basura",
+        descripcion: "Millones de toneladas de plástico y residuos llegan al mar, dañando la fauna.",
+        icono: "🗑️",
+        estado: "grave"
     },
     {
-        titulo: "Contaminación por gases",
-        descripcion: "La emisión de gases de efecto invernadero (CO2, metano) provenientes de la quema de combustibles fósiles es la principal causa del calentamiento global y el cambio climático.",
-        imagen: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&auto=format", // Imagen ilustrativa (reemplazar si se desea)
-        impacto: "Extremo"
+        id: 3,
+        titulo: "Contaminación por Gases",
+        descripcion: "La emisión de gases de efecto invernadero provoca el calentamiento global.",
+        icono: "🏭",
+        estado: "alerta"
     }
 ];
 
-// Función para mostrar los problemas en la página
-function mostrarProblemas() {
-    const container = document.getElementById('problemas-container');
-    
-    if (!container) {
-        console.error("No se encontró el contenedor 'problemas-container' en el HTML.");
-        return;
-    }
+// Almacenamiento de publicaciones
+let publicaciones = [];
+let contadorId = 1;
 
-    // Limpiar el contenedor por si tiene contenido previo
+// ============================================
+// RENDERIZAR PROBLEMAS
+// ============================================
+function renderizarProblemas() {
+    const container = document.getElementById('problemas-container');
     container.innerHTML = '';
 
-    // Recorrer el array de problemas y crear tarjetas
     problemas.forEach(problema => {
-        // Crear un div para cada tarjeta
         const tarjeta = document.createElement('div');
-        tarjeta.className = 'tarjeta-problema';
-        
-        // Construir el contenido de la tarjeta usando template literals
+        tarjeta.className = `tarjeta-problema ${problema.estado}`;
         tarjeta.innerHTML = `
-            <h2>${problema.titulo}</h2>
-            <img src="${problema.imagen}" alt="${problema.titulo}" loading="lazy">
+            <div class="icono">${problema.icono}</div>
+            <h3>${problema.titulo}</h3>
             <p>${problema.descripcion}</p>
-            <p><strong>Nivel de Impacto:</strong> <span class="impacto ${problema.impacto.toLowerCase()}">${problema.impacto}</span></p>
+            <button class="btn-detalle" data-id="${problema.id}">Ver más</button>
+            <div class="detalle-extra" id="detalle-${problema.id}" style="display: none;">
+                <p>🌱 <strong>¿Qué puedes hacer?</strong> Infórmate y apoya iniciativas para reducir este problema.</p>
+            </div>
         `;
-        
-        // Agregar la tarjeta al contenedor
         container.appendChild(tarjeta);
+    });
+
+    document.querySelectorAll('.btn-detalle').forEach(boton => {
+        boton.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const detalle = document.getElementById(`detalle-${id}`);
+            detalle.style.display = detalle.style.display === 'none' ? 'block' : 'none';
+            this.textContent = detalle.style.display === 'block' ? 'Ocultar' : 'Ver más';
+        });
     });
 }
 
-// Ejecutar la función cuando el DOM esté completamente cargado
-document.addEventListener('DOMContentLoaded', mostrarProblemas);
+// ============================================
+// FUNCIONES DEL FORO (V1 - SOLO COMENTARIOS)
+// ============================================
+
+function cargarPublicaciones() {
+    const guardado = localStorage.getItem('foroV1');
+    if (guardado) {
+        publicaciones = JSON.parse(guardado);
+        if (publicaciones.length > 0) {
+            contadorId = Math.max(...publicaciones.map(p => p.id)) + 1;
+        }
+    } else {
+        // Datos de ejemplo
+        publicaciones = [
+            {
+                id: contadorId++,
+                autor: 'Luzma 🌿',
+                contenido: '¡Hoy limpié la playa con mi comunidad! Recogimos 50 kg de plástico.',
+                fecha: new Date(Date.now() - 3600000 * 2).toISOString()
+            },
+            {
+                id: contadorId++,
+                autor: 'Lorena 💚',
+                contenido: 'Estoy creando un huerto urbano en mi casa. ¡Las plantas ayudan al planeta!',
+                fecha: new Date(Date.now() - 3600000 * 5).toISOString()
+            }
+        ];
+        guardarPublicaciones();
+    }
+    renderizarPublicaciones();
+    actualizarEstadisticas();
+}
+
+function guardarPublicaciones() {
+    localStorage.setItem('foroV1', JSON.stringify(publicaciones));
+    actualizarEstadisticas();
+}
+
+function renderizarPublicaciones() {
+    const container = document.getElementById('publicaciones-container');
+    container.innerHTML = '';
+
+    const ordenadas = [...publicaciones].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+    if (ordenadas.length === 0) {
+        container.innerHTML = '<p class="sin-publicaciones">🌟 Sé el primero en compartir algo.</p>';
+        return;
+    }
+
+    ordenadas.forEach(pub => {
+        const fecha = new Date(pub.fecha);
+        const fechaStr = fecha.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+        const horaStr = fecha.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+
+        const div = document.createElement('div');
+        div.className = 'publicacion';
+        div.innerHTML = `
+            <div class="publicacion-header">
+                <strong class="publicacion-autor">👤 ${pub.autor}</strong>
+                <span class="publicacion-fecha">📅 ${fechaStr} - ${horaStr}</span>
+            </div>
+            <div class="publicacion-contenido">${pub.contenido}</div>
+            <div class="publicacion-acciones">
+                <button class="btn-eliminar" data-id="${pub.id}">🗑️ Eliminar</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+
+    document.querySelectorAll('.btn-eliminar').forEach(boton => {
+        boton.addEventListener('click', function() {
+            const id = parseInt(this.dataset.id);
+            if (confirm('¿Eliminar esta publicación?')) {
+                publicaciones = publicaciones.filter(p => p.id !== id);
+                guardarPublicaciones();
+                renderizarPublicaciones();
+                actualizarEstadisticas();
+            }
+        });
+    });
+}
+
+function crearPublicacion(autor, contenido) {
+    const nueva = {
+        id: contadorId++,
+        autor: autor.trim() || 'Anónimo 🌱',
+        contenido: contenido.trim(),
+        fecha: new Date().toISOString()
+    };
+    publicaciones.push(nueva);
+    guardarPublicaciones();
+    renderizarPublicaciones();
+    actualizarEstadisticas();
+}
+
+function actualizarEstadisticas() {
+    document.getElementById('total-comentarios').textContent = `💬 ${publicaciones.length}`;
+}
+
+// ============================================
+// CONFIGURAR FORMULARIO
+// ============================================
+function configurarFormulario() {
+    const form = document.getElementById('form-publicacion');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const autor = document.getElementById('autor-publicacion').value;
+        const contenido = document.getElementById('contenido-publicacion').value;
+
+        if (!autor.trim() || !contenido.trim()) {
+            alert('Completa tu nombre y el contenido.');
+            return;
+        }
+
+        crearPublicacion(autor, contenido);
+        form.reset();
+    });
+}
+
+// ============================================
+// INICIALIZACIÓN
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    renderizarProblemas();
+    cargarPublicaciones();
+    configurarFormulario();
+    console.log('🌿 Foro V1 cargado.');
+});

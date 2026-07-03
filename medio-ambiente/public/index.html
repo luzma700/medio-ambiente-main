@@ -3,28 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medio Ambiente - Problemas Globales</title>
-    <!-- Enlace al archivo CSS (opcional, pero recomendado para estilos) -->
+    <title>🌍 Foro Ambiental - V1</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
     <header>
-        <h1>🌍 Problemas Ambientales</h1>
-        <p>Conoce tres de los desafíos más importantes para nuestro planeta</p>
+        <h1>🌿 Foro Ambiental</h1>
+        <p>Comparte ideas y soluciones para cuidar el planeta</p>
+        <div class="header-stats">
+            <span id="total-comentarios">💬 0</span>
+        </div>
     </header>
 
     <main>
-        <!-- Aquí se mostrarán las tarjetas de información -->
-        <section id="problemas-container">
-            <!-- El contenido será insertado dinámicamente por JavaScript -->
+        <!-- Sección de problemas ambientales -->
+        <section id="problemas-container"></section>
+
+        <!-- SECCIÓN DEL FORO -->
+        <section id="foro-container">
+            <h2>💬 Foro de Discusión</h2>
+            
+            <div class="formulario-publicacion">
+                <h3>Comparte tu idea</h3>
+                <form id="form-publicacion">
+                    <input type="text" id="autor-publicacion" placeholder="Tu nombre" required>
+                    <textarea id="contenido-publicacion" rows="3" placeholder="¿Qué quieres compartir?" required></textarea>
+                    <button type="submit">🌱 Publicar</button>
+                </form>
+            </div>
+
+            <div id="publicaciones-container"></div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 - Proyecto Medio Ambiente</p>
+        <p>🌍 Proyecto colaborativo - UMM Programación Web</p>
     </footer>
 
-    <!-- Enlace al archivo JavaScript -->
     <script src="app.js"></script>
 </body>
 </html>
