@@ -326,3 +326,18 @@ footer {
     border: 2px dashed #a5d6a7;
     flex: 1;
 }
+
+/* Estilos para el botón de like */
+.btn-like {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.btn-like:hover {
+    background: #ffccbc;
+    transform: scale(1.05);
+}
+
+.btn-like .likes-count {
+    font-weight: 700;
+}
